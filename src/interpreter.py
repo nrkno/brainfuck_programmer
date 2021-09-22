@@ -75,14 +75,16 @@ def build_jumps(program):
     return program, jump_map
 
 
+def execute(program):
+    p, memory, memory_pointer = interpret(program)
+    print(p)
+
+
 def main():
-    if len(sys.argv) < 2:
-        print("No filename given")
-        exit(1)
-    filename = sys.argv[1]
-    program = parse(read(filename))
-    printed, memory, memory_pointer = interpret(program)
-    print(printed)
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+        program = parse(read(filename))
+        execute(program)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,16 @@
 from interpreter import interpret
+import sys
+
 
 def train():
     running = True
     while running:
         # choose action
         if config_in_training() or explore_action():
-            action = act(state)
-            done, reward, state = step(action)
-            score += reward
+            pass
+            # action = act(state)
+            # done, reward, state = step(action)
+            # score += reward
 
 
 def config_in_training():
@@ -18,8 +21,7 @@ def explore_action():
     return True
 
 
-def act():
-    
+# def act():
 
 
 def step(action):
@@ -81,3 +83,14 @@ def character_position_reward(actual_print, target_print):
     comparison_list = zip(actual_print, target_print)
     only_equals = list(filter(lambda tup: tup[0] == tup[1], comparison_list))
     return len(only_equals)
+
+
+def main():
+    if len(sys.argv) == 3:
+        actual = sys.argv[1]
+        expected = sys.argv[2]
+        print(calculate_reward("", actual, expected))
+
+
+if __name__ == "__main__":
+    main()
