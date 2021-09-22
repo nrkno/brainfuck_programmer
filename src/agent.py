@@ -18,6 +18,10 @@ def explore_action():
     return True
 
 
+def act():
+    
+
+
 def step(action):
     reward = 1
     done = 0
@@ -35,10 +39,16 @@ def step(action):
     return reward, state, done
 
 
-def calculate_reward(actual_print, target_print):
-    return (character_count_reward(actual_print, target_print)
+def calculate_reward(program, actual_print, target_print):
+    return (big_program_punishment(program)
+            + character_count_reward(actual_print, target_print)
             + correct_character_reward(actual_print, target_print)
             + character_position_reward(actual_print, target_print))
+
+
+# negative 0.1 points per character in the program
+def big_program_punishment(program):
+    return -(len(program) * 0.1)
 
 
 # points for the correct amount of characters, 0 points if too many
