@@ -1,0 +1,66 @@
+* TODO Lage presentasjon til felles fagmøte med programmering om AI Programmer
+  DEADLINE: <2021-08-25 on.>
+* Referanser
+  [[https://github.com/primaryobjects/AI-Programmer][GitHub-side]]
+  [[http://www.primaryobjects.com/2013/01/27/using-artificial-intelligence-to-write-self-modifying-improving-programs/][Artikkel]]
+  [[https://arxiv.org/pdf/1709.05703.pdf][Forskningsartikkel]]
+  Artikkelserie om reinforcement learning på [[https://www.freecodecamp.org/news/a-brief-introduction-to-reinforcement-learning-7799af5840db/][Freecodecamp]]
+  [[https://deepmind.com/blog/article/deep-reinforcement-learning][Deep Reinforcement Learning]]
+  Artikkel på [[https://towardsdatascience.com/how-to-teach-an-ai-to-play-games-deep-reinforcement-learning-28f9b920440a][towardsdatascience.com]] om å lære maskiner å spille spill.
+  [[https://github.com/shivaverma/Orbit/blob/master/Paddle/DQN_agent.py][paddel]], [[https://towardsdatascience.com/create-your-own-reinforcement-learning-environment-beb12f4151ef][artikkel]]
+* Stikkord
+  Q-learning, -network, -table
+  Bayesian Optimization
+  Reinforcement learning
+  Deep learning
+  Deep Reinforcement Learning
+* Lærende algoritme
+  Algoritmen skal skal kunne lære av å systematisk utforske hvilke kodestrenger som leder til hvilke resultater. Systematisk utforskning oppnår den ved å starte med korte kodestrenger som det gjøres små endringer på. Ved å undersøke forskjellene mellom kodestrengene og resultatene som kommer ut av endringene, skal algoritmen lære hva operasjonene i kodestrengene gjør.
+
+  #+begin_src ditaa :file system.png :cmdline -r
+    
+  #+end_src
+* Programmerende algoritme
+  :PROPERTIES:
+  :EXPORT_OPTIONS: author:nil toc:nil timestamp:nil num:nil
+  :END:
+** Medsammensvorne
+   * Emil Huster (DataHub, ex-anbefalingsteamet)
+   * Eirik Sæteher (anbefalingsteamet)
+** Beskrivelse av oppgaven
+   Kan en maskin lære å programmere i Brainfuck?
+*** 
+    Vel, maskiner kan lære å spille spill. Bare se på Googles [[https://deepmind.com/blog/article/deep-reinforcement-learning][DeepMind]]-prosjekt der de ved hjelp av Deep Q-Learning har lært maskiner å spille gamle Atari-spill
+*** 
+    Hva om programmeringen kan settes opp som et spill?
+*** 
+    [[./skjema.png]]
+** Arbeidsprosess
+   #+begin_notes
+   Fra skjemaet over innså vi etter litt grubling at vi trengte følgende:
+      * En interpreter for Brainfuck
+        som kunne lese Brainfuck-kode og gi et resulatat i form av en utskrift. Vi funderte også på om vi også skulle returnere verdien i minnet hvor pekeren pekte.
+      * En belønningsfunksjon
+        som kunne gi belønning basert på koden som maskinen genererte og resultatet interpreteren ga.
+      * En funksjon for å avgjøre neste handling
+        basert på tilfeldighet og hva maskinen hadde lært så langt.
+      * En Deep Q-learning-modell
+   #+end_notes
+   * En interpreter for Brainfuck
+   * En belønningsfunksjon
+   * En funksjon for å avgjøre neste handling
+   * En Deep Q-learning-modell
+** Utfordringer
+   * Sette opp infrastrukturen (python, jupyter, keras, tensorflow).
+   * Sette seg inn i keras og tensorflow.
+   * Finne ut av detaljene som artikler om praktiske implementasjoner av Q-Learning overser.
+   * Modellbygging
+     * Hvordan skal kodestrengen mates inn som en del av tilstanden?
+* Presentasjon for faggruppen
+  Stikkord:
+  1. Lærende algoritme
+  2. Nevralt nett
+  3. Brainfuck
+  4. Kodestreng
+  5. Resultat
+  6. Forenkling til at en mengde kodestrenger med resultater presenteres for algoritmen. Hvilke verktøy må algoritmen være utstyrt med for å lære av mengden?
