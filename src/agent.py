@@ -43,9 +43,7 @@ def calculate_reward(actual_print, target_print):
 
 # points for the correct amount of characters, 0 points if too many
 def character_count_reward(actual_print, target_print):
-    actual_len = len(actual_print)
-    target_len = len(target_print)
-    return actual_len if target_len >= actual_len else 0
+    return len(actual_print) if len(target_print) >= len(actual_print) else 0
 
 
 # 1 point per correct character (not influenced by position)
@@ -64,8 +62,6 @@ def correct_character_reward(actual_print, target_print):
         if char in character_map and character_map[char] > 0:
             character_map[char] -= 1
             correct_characters += 1
-        else:
-            character_map[char] = 1
 
     return correct_characters
 
@@ -73,5 +69,5 @@ def correct_character_reward(actual_print, target_print):
 # 1 point per correct character on the correct position
 def character_position_reward(actual_print, target_print):
     comparison_list = zip(actual_print, target_print)
-    only_equals = filter(lambda tup: tup[0] == tup[1], comparison_list)
+    only_equals = list(filter(lambda tup: tup[0] == tup[1], comparison_list))
     return len(only_equals)
