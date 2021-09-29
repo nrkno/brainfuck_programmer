@@ -1,5 +1,5 @@
-* TODO Lage presentasjon til felles fagmøte med programmering om AI Programmer
-  DEADLINE: <2021-08-25 on.>
+* Dokumenter
+  GitHub: https://github.com/nrkno/brainfuck_programmer
 * Referanser
   [[https://github.com/primaryobjects/AI-Programmer][GitHub-side]]
   [[http://www.primaryobjects.com/2013/01/27/using-artificial-intelligence-to-write-self-modifying-improving-programs/][Artikkel]]
@@ -17,24 +17,41 @@
 * Lærende algoritme
   Algoritmen skal skal kunne lære av å systematisk utforske hvilke kodestrenger som leder til hvilke resultater. Systematisk utforskning oppnår den ved å starte med korte kodestrenger som det gjøres små endringer på. Ved å undersøke forskjellene mellom kodestrengene og resultatene som kommer ut av endringene, skal algoritmen lære hva operasjonene i kodestrengene gjør.
 
-  #+begin_src ditaa :file system.png :cmdline -r
-    
-  #+end_src
 * Programmerende algoritme
   :PROPERTIES:
   :EXPORT_OPTIONS: author:nil toc:nil timestamp:nil num:nil
+  :EXPORT_FILE_NAME: Presentasjon.html
   :END:
 ** Medsammensvorne
    * Emil Huster (DataHub, ex-anbefalingsteamet)
-   * Eirik Sæteher (anbefalingsteamet)
+   * Eirik Sæther (anbefalingsteamet)
 ** Beskrivelse av oppgaven
    Kan en maskin lære å programmere i Brainfuck?
-*** 
-    Vel, maskiner kan lære å spille spill. Bare se på Googles [[https://deepmind.com/blog/article/deep-reinforcement-learning][DeepMind]]-prosjekt der de ved hjelp av Deep Q-Learning har lært maskiner å spille gamle Atari-spill
+*** Vent litt... Brainfuck?
+    * Esoterisk programmeringsspråk utviklet av Urban Müller i 1993.
+    * Svært minimalistisk med sine åtte operasjoner
+      * ~+~ og ~-~ endrer verdien i en minnecelle
+      * ~<~ og ~>~ flytter pekeren til forrige og neste minnecelle
+      * ~[~ og ~]~ for å lage løkker, litt forenklet
+      * ~.~ og ~,~ skriver ut og leser inn data til/fra terminalen
+    * Les mer om [[https://en.wikipedia.org/wiki/Brainfuck][Brainfuck på Wikipedia]].
+*** Tilbake til der vi var...
+    Vel, maskiner kan lære å spille spill.
+
+    Bare se på Googles [[https://deepmind.com/blog/article/deep-reinforcement-learning][DeepMind]]-prosjekt der de ved hjelp av Deep Q-Learning har lært maskiner å spille gamle Atari-spill
 *** 
     Hva om programmeringen kan settes opp som et spill?
-*** 
     [[./skjema.png]]
+    #+begin_notes
+    Agent
+    * Utfører en handling ved å velge en lovlig Brainfuck-operasjon (handlingsfunksjon).
+    * Oppdaterer kunnskapen sin basert på belønning og tilstanden som den får fra miljøet (Deep Q-learning-modell).
+    Miljø
+    * Tolker kodestrengen (interpreter)
+    * Sjekker hvor nært resultatet er målet (belønningsfunksjon)
+    * Gir informasjon om tilstanden, blant annet kodestrengen, og hvordan minnet ser ut (hjelpefunksjoner).
+    #+end_notes
+ 
 ** Arbeidsprosess
    #+begin_notes
    Fra skjemaet over innså vi etter litt grubling at vi trengte følgende:
@@ -45,22 +62,94 @@
       * En funksjon for å avgjøre neste handling
         basert på tilfeldighet og hva maskinen hadde lært så langt.
       * En Deep Q-learning-modell
+      * (Hjelpefunksjoner)
    #+end_notes
    * En interpreter for Brainfuck
    * En belønningsfunksjon
    * En funksjon for å avgjøre neste handling
    * En Deep Q-learning-modell
+   * (Hjelpefunksjoner)
+*** Interpreter
+    #+begin_notes
+    Husk å kjøre pyvenv-activate før kodenblokkene kan kjøres.
+    #+end_notes
+    #+begin_src python :exports none :session *Python*
+      import os
+      os.chdir("./src")
+    #+end_src
+
+    #+RESULTS:
+    : None
+    
+    #+begin_src python :results output replace :exports both :session *Python*
+      from interpreter import interpret
+      brainfuck_H = ("++++++++++++"
+                     "++++++++++++"
+                     "++++++++++++"
+                     "++++++++++++"
+                     "++++++++++++"
+                     "++++++++++++" ".")
+      brainfuck_e = ("++++++++++++++++++++"
+                     "++++++++++++++++++++"
+                     "++++++++++++++++++++"
+                     "++++++++++++++++++++"
+                     "+++++++++++++++++++++" ".")
+      brainfuck_i = "++++" + brainfuck_e
+      brainfuck_letters = [brainfuck_H, brainfuck_e, brainfuck_i]
+      print([interpret(letter) for letter in brainfuck_letters])
+    #+end_src
+
+    #+RESULTS:
+    : [('H', [72], 0), ('e', [101], 0), ('i', [105], 0)]
+    
+*** Hello world
+    #+begin_src python :results output replace :exports both :session *Python*
+      brainfuck_hello = ("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+"
+                         "[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.----"
+                         "--.--------.>>+.>++.")
+      print(interpret(brainfuck_hello))
+    #+end_src
+
+    #+RESULTS:
+    : ('Hello World!\n', [0, 0, 72, 100, 87, 33, 10], 6)
+
+*** Belønningssystem
+    * 1 poeng for hvert tegn som skrives ut opp til lengden av målet.
+    * 1 poeng for hver gang riktig tegn skrives ut.
+    * 1 poeng for riktig tegn i riktig posisjon
+    * -0,1 poeng ganger antall operasjoner.
+    * Merk: maks poeng for å få riktig ord er 3 ganger lengden på ordet.
+    * For eksempel: Hvis målet er "Hei", så gir
+      * ""    -> 0 poeng
+      * "q"   -> 1 poeng
+      * "e"   -> 2 poeng
+      * "H"   -> 3 poeng
+      * "Hqi" -> 6 poeng
+	
+*** Belønningsfunksjon
+    #+begin_src python :results output replace :exports both :session *Python*
+      from agent import calculate_reward
+      results = ["", "H", "Hw", "Hwaaaaaa", "Hwaa wrl"]
+      target = "Hello world"
+      print([calculate_reward("", res, target) for res in results])
+    #+end_src
+
+    #+RESULTS:
+    : [0.0, 3.0, 5.0, 11.0, 14.0]
+
 ** Utfordringer
    * Sette opp infrastrukturen (python, jupyter, keras, tensorflow).
-   * Sette seg inn i keras og tensorflow.
+   * Sette seg inn i keras.
    * Finne ut av detaljene som artikler om praktiske implementasjoner av Q-Learning overser.
    * Modellbygging
+     * Hvilken informasjon skal inneholdes i tilstanden?
      * Hvordan skal kodestrengen mates inn som en del av tilstanden?
-* Presentasjon for faggruppen
-  Stikkord:
-  1. Lærende algoritme
-  2. Nevralt nett
-  3. Brainfuck
-  4. Kodestreng
-  5. Resultat
-  6. Forenkling til at en mengde kodestrenger med resultater presenteres for algoritmen. Hvilke verktøy må algoritmen være utstyrt med for å lære av mengden?
+     * Etc.
+** Annerledes neste gang
+   #+begin_notes
+   * Bruke mindre tid på å slåss mot feilmeldinger når bibliotekene ikke vil la se installere. Vi rakk uansett ikke å begynne på modellbyggingen, og kunne brukt tiden bedre ved å bygge rammeverket.
+   * Jobbe i et system der koder, dokumenterer, og lager presentasjonen samtidig.
+   #+end_notes
+   * Bruke mindre tid på å slåss mot feilmeldinge.
+   * Jobbe i et system der koder, dokumenterer, og lager presentasjonen samtidig.
+** Takk for oppmerskomheten!
